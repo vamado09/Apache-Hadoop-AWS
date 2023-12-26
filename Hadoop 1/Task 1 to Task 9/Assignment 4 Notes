@@ -1,0 +1,88 @@
+Assignment 4 by Vicente De Leon
+
+Present Hadoop notes installation
+
+start: start-all.sh
+go to: http://localhost:9870/dfshealth.html#tab-overview
+
+HADOOP - HDFS DFS Commands (EXTREMELY IMPORTANT):
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+
+1) Task 1 (Creating directory):
+Soruce: https://tecadmin.net/working-with-hdfs-file-system/
+Source: https://www.quora.com/How-will-you-check-if-a-file-exists-in-HDFS
+
+type: hdfs dfs -mkdir /assignment_data
+to check if it exists: hdfs dfs -ls /
+
+
+2) Task 2 (Upload files to HDFS directory)
+Source: https://tecadmin.net/working-with-hdfs-file-system/
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-how-to-list-files-and-directories-using-hdfs-dfs/
+
+type: cd ~/Desktop (because I have both sample files in my Desktop)
+type: hdfs dfs -put hw4_file1.txt /assignment_data/ (to add txt file into directory)
+type: hdfs dfs -put FSU_IU_Records.csv /assignment_data/ (to add csv file into directory)
+
+3) Task 3: Checking if these files exists
+Source: Source: https://www.quora.com/How-will-you-check-if-a-file-exists-in-HDFS
+type: hdfs dfs -ls /assignment_data/ (to check if those two files exist within directory. Just like when you use -ls command in Mac Terminal after pwd and cd to acces files within Desktop.)
+
+4) Task 4: View File Content:
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+
+type: hdfs dfs -cat /assignment_data/hw4_file1.txt (display file 1 in MAC Terminal)
+type: hdfs dfs -cat /assignment_data/FSU_IU_Records.csv
+
+5) Task 5: Creat subdirectory
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+Source: Soruce: https://tecadmin.net/working-with-hdfs-file-system/
+
+type: hdfs dfs -mkdir /assignment_data/docs
+
+6) Task 6: Move Files
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+-mv is used to move files from source to destination
+
+type: hdfs dfs -mv /assignment_data/hw4_file1.txt /assignment_data/docs/
+type: hdfs dfs -mv /assignment_data/FSU_IU_Records.csv /assignment_data/docs/
+
+7) Task 7: Delet Files from HDFS
+-rm is used to Remove File or a Directory
+
+type:  hdfs dfs -rm /assignment_data/docs/hw4_file1.txt
+type: hdfs dfs -rm /assignment_data/docs/FSU_IU_Records.csv
+
+8) Task 8: Deleting Directory from HDFS
+Source: https://stackoverflow.com/questions/13529114/how-to-delete-a-directory-from-hadoop-cluster-which-is-having-comma-in-its-na
+
+type: hdfs dfs -rm -r /assignment_data/docs/
+
+
+9) Task 9: HDFS File status
+
+Just added: hdfs dfs -put FSU_IU_Records.csv /assignment_data/ (to check status size, replication, block location)
+
+Byte size:
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+Source: https://www.edureka.co/community/6712/hadoop-fs-stat-command
+Source: https://community.pivotal.io/s/article/Understanding-format-options-for-hdfs--stat-command?language=en_US
+
+type: hdfs dfs -stat %b /assignment_data/FSU_IU_Records.csv (returns 443)
+
+Replication factor:
+Source: https://community.pivotal.io/s/article/Understanding-format-options-for-hdfs--stat-command?language=en_US
+Source: https://stackoverflow.com/questions/25166926/how-do-you-retrieve-the-replication-factor-info-in-hdfs-files
+Source: https://www.projectpro.io/recipes/run-hdfs-filesystem-checking-utility
+
+type: hdfs dfs -ls /assignment_data/FSU_IU_Records.csv (returns replication fatcor of 1. There is just one copy of the file within HDFS) 
+
+Block Location:
+Source: https://www.projectpro.io/recipes/run-hdfs-filesystem-checking-utility
+Source: https://stackoverflow.com/questions/11168427/viewing-the-number-of-blocks-for-a-file-in-hadoop
+
+type: hdfs fsck /assignment_data/FSU_IU_Records.csv -files -blocks (you can also see byte size: 443 B, replication factor: 1, and block locations.)
+block locations for "FSU_IU_Records.csv": BP-68641934-127.0.0.1-1695166926435:blk_1073741827_1003 len=443 Live_repl=1
+
+Finish:
+type to end: stop-all.sh

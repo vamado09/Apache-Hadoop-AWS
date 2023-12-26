@@ -1,0 +1,188 @@
+Vicente De Leon
+
+Assignment 4 Notes Part 2 (Mac Terminal Notes) Steps:
+Source: http://dbversity.com/writing-an-hadoop-mapreduce-program-in-python/
+Source: https://sparkbyexamples.com/apache-hadoop/hadoop-hdfs-dfs-commands-and-starting-hdfs-dfs-services/
+Source: https://www.tutorialspoint.com/hadoop/hadoop_enviornment_setup.htm
+Source: https://hadoop.apache.org/docs/stable/hadoop-streaming/HadoopStreaming.html
+Source: https://hadoop.apache.org/docs/r1.2.1/streaming.html
+
+Task 10)
+type: start-all.sh (starting hadoop services)
+Since assignment_data HDFS directory was created for Tasks 1 to 9 let's use it.
+type: hdfs dfs -put Kindle_Store_5.json /assignment_data/ (how I added the JSON file to directory)
+type: hdfs dfs -ls /assignment_data/ (to check if "Kindle_Store_5.json" file is within the HDFS directory)
+type: hdfs dfs -du /assignment_data/Kindle_Store_5.json (check file size -> 1,761,438,276 = 1.76GB
+
+Task 11)
+1) After writing Python scripts: mapper.py and reducer.py, lets make then available:
+type: cd ~/Desktop
+type: chmod +x mapper.py (to make the script executable)
+type: chmod +x reducer.py (to make the script executable)
+type to check if they exist: ls -l mapper.py reducer.py
+
+
+2) Let's start Hadoop services:
+type: start-all.sh (starting Hadoop)
+type: hdfs dfs -ls / (let's check if assignment_data directory created for Tasks 1 to 9 still exists. Let's use this smae directory.)
+type: hdfs dfs -ls /assignment_data/ (to check if "Kindle_Store_5.json" file is within the HDFS directory)
+
+
+3)
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files mapper.py,reducer.py \
+-mapper mapper.py \
+-reducer reducer.py \
+-input /assignment_data/Kindle_Store_5.json \
+-output /assignment_data/output
+
+
+type: hdfs dfs -rm -r /assignment_data/output (to delete existing output because overwrtting is not allowed)
+
+Display Results:
+Source: https://stackoverflow.com/questions/45316617/how-can-i-view-a-mapreduce-job-hadoop-output-file
+Source: https://community.cloudera.com/t5/Support-Questions/How-can-we-see-the-output-in-single-file-if-3-files-are/m-p/114110
+Source: https://courses.engr.illinois.edu/cs398acc/sp2018/mps/mp2.html
+
+let's display entire content of output directory:
+type: hdfs dfs -ls /assignment_data/output 
+
+Just like Part 1, I can use the cat command to display content
+type: hdfs dfs -cat /assignment_data/output/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output/part-00000 ~/Desktop/Task11_output.txt
+
+
+
+Task 12)
+1) Write new top_n_words.py script and make it executable:
+type: cd ~/Desktop
+type: chmod +x top_n_words.py (to make the script executable)
+type: ls -l top_n_words.py (to check if it exists)
+
+
+################# 5N #########################################################################
+
+2) To run Task 12 to run hadoop job (part-00000 is the result from Task 11):
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files top_n_words.py \
+-mapper "/bin/cat" \
+-reducer "top_n_words.py 5" \
+-input /assignment_data/output/part-00000 \
+-output /assignment_data/output_topN_Task12
+
+view output directory:
+type: hdfs dfs -ls /assignment_data/output_topN_Task12 (top 5 words)
+
+
+important, we can view this in source:
+sys.argv[0,1,2]: https://www.quora.com/What-does-sys-argv-1-mean-and-how-does-it-work
+sys.argv[0] -> top_n_words.py
+sys.argv[1] -> 5 (or any other number that the user likes top 5, top 10 etc)
+
+In case it doesn't work and I need to delete the output directory to run again HDFS CODE:
+type: hdfs dfs -rm -r /assignment_data/output_topN_Task12
+
+Results:
+type: hdfs dfs -cat /assignment_data/output_topN_Task12/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output_topN_Task12/part-00000 ~/Desktop/Task12_output.txt
+
+################# 10N #########################################################################
+
+To run Task 12 to run hadoop job (part-00000 is the result from Task 11):
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files top_n_words.py \
+-mapper "/bin/cat" \
+-reducer "top_n_words.py 10" \
+-input /assignment_data/output/part-00000 \
+-output /assignment_data/output_topN10_Task12
+
+In case it doesn't work and I need to delete the output directory to run again HDFS CODE:
+type: hdfs dfs -rm -r /assignment_data/output_topN10_Task12
+
+
+Results:
+type: hdfs dfs -cat /assignment_data/output_topN10_Task12/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output_topN10_Task12/part-00000 ~/Desktop/Task12_N10_output.txt
+
+
+
+############### COMBINER #################################################################
+
+Combiner comparison:
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files mapper.py,reducer.py \
+-mapper mapper.py \
+-combiner reducer.py \
+-reducer reducer.py \
+-input /assignment_data/Kindle_Store_5.json \
+-output /assignment_data/output_with_combiner_Task12
+
+
+To delete: hdfs dfs -rm -r /assignment_data/output_with_combiner_Task12
+
+
+Results:
+type: hdfs dfs -cat /assignment_data/output_with_combiner_Task12/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output_with_combiner_Task12/part-00000 ~/Desktop/Task12_output_combiner.txt
+
+
+
+COMBINER 5N #########################
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files top_n_words.py \
+-mapper "/bin/cat" \
+-reducer "top_n_words.py 5" \
+-input /assignment_data/output_with_combiner_Task12/part-00000 \
+-output /assignment_data/output_topN_Task12_combiner
+
+view output directory:
+type: hdfs dfs -ls /assignment_data/output_topN_Task12_combiner
+
+
+In case it doesn't work and I need to delete the output directory to run again HDFS CODE:
+type: hdfs dfs -rm -r /assignment_data/output_topN_Task12_combiner
+
+Results:
+type: hdfs dfs -cat /assignment_data/output_topN_Task12_combiner/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output_topN_Task12_combiner/part-00000 ~/Desktop/Task12_topN_output.txt
+
+
+COMBINER 10N ##############################
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files top_n_words.py \
+-mapper "/bin/cat" \
+-reducer "top_n_words.py 10" \
+-input /assignment_data/output_with_combiner_Task12/part-00000 \
+-output /assignment_data/output_topN10_Task12_combiner
+
+
+view output directory:
+type: hdfs dfs -ls /assignment_data/output_topN10_Task12_combiner
+
+
+In case it doesn't work and I need to delete the output directory to run again HDFS CODE:
+type: hdfs dfs -rm -r /assignment_data/output_topN10_Task12_combiner
+
+Results:
+type: hdfs dfs -cat /assignment_data/output_topN10_Task12_combiner/part-00000
+
+If I want to save results I can use the get command:
+type: hdfs dfs -get /assignment_data/output_topN10_Task12_combiner/part-00000 ~/Desktop/Task12_topN10_output.txt
+
+
+
+
+
+END: stop-all.sh
+
+

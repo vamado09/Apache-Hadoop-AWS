@@ -1,0 +1,11 @@
+The top N value pairs are (descending order): 	
+the: 9503912	
+and: 6969004	
+to: 5939234	
+a: 5671520	
+i: 5229841	
+of: 4012850	
+is: 3427513	
+this: 3370792	
+in: 2932803	
+it: 2768483	

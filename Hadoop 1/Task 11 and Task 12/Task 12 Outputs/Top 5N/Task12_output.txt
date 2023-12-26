@@ -1,0 +1,6 @@
+The top N value pairs are (descending order): 	
+the: 9503912	
+and: 6969004	
+to: 5939234	
+a: 5671520	
+i: 5229841	
