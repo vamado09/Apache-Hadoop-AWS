@@ -1,0 +1,34 @@
+# VPC CREATION FOR EXISTING RDS INSTANCE -> database-1
+
+aws configure
+cd ~/Desktop
+
+type:
+aws cloudformation create-stack \
+--stack-name WebApp7 \
+--template-body file://vpc.json \
+--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+
+# "StackId": "arn:aws:cloudformation:us-east-2:296632356656:stack/WebApp7/8be3b900-83f4-11ee-9968-06ba2a808909"
+
+# to delete stack: aws cloudformation delete-stack --stack-name WebApp7
+
+# to view progress type:
+aws cloudformation describe-stacks --stack-name WebApp7
+
+
+# Creating stack: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-creating-stack.html
+# Parameter: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+# Other Parameters for custome names (which I have): https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+# to describe stack and see progress: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-stacks.html
+# to delete stack: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/delete-stack.html
+
+# Modifying RDS instance
+
+aws rds modify-db-instance \
+--db-instance-identifier database-1 \
+--db-subnet-group-name "sb group7" \
+--vpc-security-group-ids sg-01be85adbca0f913d \
+--apply-immediately
+
+# https://docs.aws.amazon.com/cli/latest/reference/docdb/modify-db-instance.html

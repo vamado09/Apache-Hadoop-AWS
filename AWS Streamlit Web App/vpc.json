@@ -1,0 +1,111 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation for VPC HW7",
+  "Resources": {
+    "WebAppVPCHW7": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "172.32.0.0/16",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true"
+      }
+    },
+    "WebAppInternetGatewayHW7": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {}
+    },
+    "WebAppAttachVPCGatewayHW7": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": { "Ref": "WebAppVPCHW7" },
+        "InternetGatewayId": { "Ref": "WebAppInternetGatewayHW7" }
+      }
+    },
+    "WebAppSubnet1HW7": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "WebAppVPCHW7" },
+        "CidrBlock": "172.32.1.0/24",
+        "AvailabilityZone": "us-east-2a"
+      }
+    },
+    "WebAppSubnet2HW7": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "WebAppVPCHW7" },
+        "CidrBlock": "172.32.2.0/24",
+        "AvailabilityZone": "us-east-2b"
+      }
+    },
+    "WebAppSubnet3HW7": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "WebAppVPCHW7" },
+        "CidrBlock": "172.32.3.0/24",
+        "AvailabilityZone": "us-east-2c"
+      }
+    },
+    "WebAppRouteTableHW7": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "WebAppVPCHW7" }
+      }
+    },
+    "WebAppRouteHW7": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": { "Ref": "WebAppRouteTableHW7" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": { "Ref": "WebAppInternetGatewayHW7" }
+      }
+    },
+    "SubnetRouteTableAssociation1HW7": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "WebAppSubnet1HW7" },
+        "RouteTableId": { "Ref": "WebAppRouteTableHW7" }
+      }
+    },
+    "SubnetRouteTableAssociation2HW7": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "WebAppSubnet2HW7" },
+        "RouteTableId": { "Ref": "WebAppRouteTableHW7" }
+      }
+    },
+    "SubnetRouteTableAssociation3HW7": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "WebAppSubnet3HW7" },
+        "RouteTableId": { "Ref": "WebAppRouteTableHW7" }
+      }
+    },
+    "WebAppSecurityGroupHW7": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName": "StreamlitWebAppSG",
+        "GroupDescription": "Security Group for web application",
+        "VpcId": { "Ref": "WebAppVPCHW7" },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow MySQL access from anywhere"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic"
+          }
+        ]
+      }
+    }
+  }
+}
+

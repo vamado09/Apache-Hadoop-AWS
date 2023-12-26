@@ -1,0 +1,80 @@
+############### Streankit Web Application:
+#Dependencies:
+pip instal streamlit
+pip install pandas
+pip install boto3
+pip install sqlalchemy pymysql
+
+or
+pip install streamlit pandas boto3 sqlalchemy pymysql
+
+pip uninstall awscli botocore s3transfer
+pip install awscli==1.30.3 botocore==1.32.3 s3transfer==0.7.0 boto3 (I was having trouble with boto3)
+
+
+to run app locally:
+cd ~/Desktop
+streamlit run AWSWebApp.py
+
+############### Getting Requirments using pipreqs .:
+create a folder (AWSWebApp)
+cd Desktop/AWSWebApp
+pipreqs./
+
+
+
+#######  EC2WebApp7 Deployment:
+
+# transfer AWSWebApp.py to EC2WebApp7:
+transferring files: https://www.bornfight.com/blog/transferring-files-between-local-machine-and-aws-instance/
+cd ~/Desktop
+1) type: scp -i ~/Desktop/step9-hw6.pem ~/Desktop/AWSWebApp.py ec2-user@13.59.219.234:/home/ec2-user/
+
+# the above code explained:
+- -i ~/Desktop/step9-hw6.pem (specifies private key to use for the secure connection)
+- ~/Desktop/AWSWebApp.py (path to web application)
+- ec2-user@13.59.219.234 (CE2 username Amazon Linux and EC2WebApp7 Public IP Address)
+- :/home/ec2-user/ (the destination path on EC2 instance where files will be copied)
+
+# transfer requirements.txt to EC2WebApp7:
+2) type: scp -i ~/Desktop/step9-hw6.pem ~/Desktop/requirements.txt ec2-user@13.59.219.234:/home/ec2-user/
+
+# SSH into EC2WebApp7 instance:
+3) type: ssh -i ~/Desktop/step9-hw6.pem ec2-user@13.59.219.234
+
+# Setting up enviormental variables to the EC2WebApp7 instance:
+type: nano ~/.zshrc
+
+enter:
+export RDS_HOST="database-1.xxxxxxx"
+export DB_USERNAME="xxxxxx"
+export DB_PASSWORD="xxxxxxx"
+export DB_NAME="xxxx"
+export BUCKET_NAME="xxxxxx"
+
+type: control + x
+type: Y
+enter
+type: source ~/.zshrc (to apply changes)
+
+# Amazon Linux installing pip, Python, and MySQL:
+type: sudo yum install python3-pip -y
+type: sudo yum install python3 -y
+type: pip install --user pymysql
+
+# install requirments:
+4) type: pip install --user -r requirements.txt
+
+# run web app:
+# was running into this issue: https://discuss.streamlit.io/t/modulenotfounderror-no-module-named-altair-vegalite-v4/42921
+5) type: streamlit run AWSWebApp.py --server.port 8501
+
+# (OPTIONAL) to keep app running after disconnecting from SSH session:
+type: tmux new -s streamlit_session
+type: streamlit run AWSWebApp.py --server.port 8501
+
+
+# Acces app via web browser:
+type: http://13.59.219.234:8501
+
+
