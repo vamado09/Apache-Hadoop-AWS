@@ -1,0 +1,78 @@
+# Step 5
+type: install --upgrade pip
+type: pip install awscli 
+
+type: aws --version
+
+type: aws configure
+enter AWS Access Key ID (store in OneDrive)
+enter AWS Secret Acces Key (store in OneDrive)
+press enter
+press enter
+
+
+# Step 6
+type: aws iam create-group --group-name GroupHW6 (create group)
+type: aws iam add-user-to-group --user-name Vicente_IAM --group-name GroupHW6 (adding user)
+type: aws iam attach-group-policy --group-name GroupHW6 --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess (adding permission)
+ype: aws iam attach-group-policy --group-name GroupHW6 --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess (adding permision)
+
+
+# Step7
+type: aws s3api create-bucket --bucket s3-bucket-hw6 --region us-east-2 --create-bucket-configuration LocationConstraint=us-east-2 (to create bucket outside "us-east-1")
+
+type for bucket public access (JSON inline command - easier/simpler?):
+aws s3api put-bucket-policy --bucket s3-bucket-hw6 --policy '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::s3-bucket-hw6/*"
+        }
+    ]
+}'
+
+
+Step 8:
+type: aws ec2 create-security-group --group-name HW6SecurityGroup --description "HW6 Security Group" (told me to specify a region)
+# OR:
+type: aws ec2 create-security-group --group-name HW6SecurityGroup --description "HW6 Security Group" --region us-east-2 (I'm going to use this since I am using Ohio as region)
+
+# Inbound 
+getting my IPv4 address -> type: curl checkip.amazonaws.com (73.57.1.79)
+type: aws ec2 authorize-security-group-ingress --group-name HW6SecurityGroup --protocol tcp --port 22 --cidr 73.57.1.79/32 --region us-east-2 (SSH traffic)
+type: aws ec2 authorize-security-group-ingress --group-name HW6SecurityGroup --protocol tcp --port 80 --cidr 0.0.0.0/0 --region us-east-2 (HTTP traffic)
+
+# Outbound -> Group ID came from EC2 dashboard, Security Groups, sg-09e29c694e37e30b9	(HW6SecurityGroup)
+type: aws ec2 authorize-security-group-egress --group-id sg-09e29c694e37e30b9 --protocol tcp --port 80 --cidr 0.0.0.0/0 --region us-east-2 (port 80 - permission HTTP to anywhere regular)
+type: aws ec2 authorize-security-group-egress --group-id sg-09e29c694e37e30b9 --protocol tcp --port 443 --cidr 0.0.0.0/0 --region us-east-2 (port 443 - permission HTTP to anywhere secure)
+
+
+Step 9:
+# image-id ami-0fa399d9c130ec923 (came from EC2 Dashboard -> Launch Instances)
+# region -> Ohio -> us-east-2 ( I have no info about subnet_id)
+# instance type -> Free tier instance (t2.micro)
+# security group id -> HW6SecurityGroup ID I just created EC2 dahsboard (Security Groups)
+# key name -> Key Pair name
+
+type: aws ec2 run-instances --image-id ami-0fa399d9c130ec923 --region us-east-2 --instance-type t2.micro --security-group-ids sg-09e29c694e37e30b9 --key-name step9-hw6
+
+Step 10:
+type: cd ~/Desktop (I have step9-hw6.pem on my Desktop)
+type: chmod 400 step9-hw6.pem (source)
+type: ssh -i step9-hw6.pem ec2-user@18.191.132.156 (CLI command)
+type: yes
+
+type: sudo dnf update -y (update EC2 software)
+type: sudo dnf install -y httpd php php-mysqli mariadb105 (to install web server, php, mysql, mariadb)
+
+Step 11:
+type: sudo systemctl start httpd (to start http)
+type: sudo systemctl enable httpd (to start on boot)
+type: sudo systemctl stop httpd
+type: exit (to logout)
+
+Additionaly, I went to EC2 Dashboard, selected Instances (Actions and then Manage Instance State), stop instance.
