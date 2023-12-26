@@ -1,2 +1,2 @@
 # Apache-Hadoop-AWS
-MapReduce jobs using Hadoop as well as Web application and Machine Learning deployment using AWS #ApacheHadoop&amp;AWS
+This Big Data Applications repository serves as a comprehensive showcase of diverse data processing and analysis techniques, including Java programming basics, Python-based MapReduce jobs, web application development with Streamlit and AWS integration such as S3 Buckets and RDS, along with hands-on machine learning projects employing Jupyter Notebook and AWS SageMaker. Feel free to explore a wide range of examples and resources (valuables resorces within each project), suitable for both beginners and intermediates.
