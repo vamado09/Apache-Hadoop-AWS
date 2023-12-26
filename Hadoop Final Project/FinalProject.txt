@@ -1,0 +1,38 @@
+Hadoop Final Project
+
+1)  type: start-all.sh
+2) type: hdfs dfs -ls /assignment_data/
+
+delete stuff within HDFS directory:
+type: hdfs dfs -rm /assignment_data/data1.csv
+type: hdfs dfs -rm /assignment_data/data2.csv
+type: hdfs dfs -rm -r /assignment_data/output_Task3_hw5
+type: hdfs dfs -rm /assignment_data/smaller_output_Task2_hw5.csv
+
+Or, if I want to delete everything wihtin assignment_data directory:
+type: hdfs dfs -rm -r /assignment_data/*
+
+3) type: cd ~/Desktop
+4) type insert folder within HDFS directory: hdfs dfs -put data/* /assignment_data
+5) chekcing if all data from "data" (extracted rar file) exists: hdfs dfs -ls /assignment_data
+
+6) making scripts executable:
+type: chmod +x mapper.py (to make the script executable)
+type: chmod +x reducer.py (to make the script executable)
+
+
+7) Running the MapReduce job:
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+-files mapper.py,reducer.py \
+-mapper mapper.py \
+-reducer reducer.py \
+-input '/assignment_data/*' \
+-output /assignment_data/output_FinalProject
+
+to delete type: hdfs dfs -rm -r /assignment_data/output_FinalProject
+
+8) type to see entire output content: hdfs dfs -ls /assignment_data/output_FinalProject
+9) type to see part-00000 content: type: hdfs dfs -cat /assignment_data/output_FinalProject/part-00000
+10) type to export data into csv file: hdfs dfs -get /assignment_data/output_FinalProject/part-00000 ~/Desktop/FinalProject_output.csv
+
+11. END: stop-all.sh
